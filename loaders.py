@@ -66,6 +66,53 @@ def imagenet_loader(batch_size: int, distributed: bool = False) -> tuple([DataLo
 
     return train_loader, val_loader
 
+def tiny_imagenet_loader(batch_size: int, distributed: bool = False) -> tuple([DataLoader, DataLoader]):
+    """Loader for the Tiny ImageNet dataset.
+
+    Args:
+        batch_size: Batch size.
+        workers: Number of workers.
+        distributed: Whether or not to parallelize.
+
+    Returns:
+        Training and validation set loaders.
+
+    """
+    traindir = os.path.join(tiny_imagenet_path, 'train')
+    valdir = os.path.join(tiny_imagenet_path, 'val')
+
+    normalize = transforms.Normalize(mean=[0.4802, 0.4481, 0.3975],
+                                     std=[0.2302, 0.2265, 0.2262])
+
+    train_set = datasets.ImageFolder(
+        traindir,
+        transforms.Compose([
+            transforms.RandomResizedCrop(224),
+            transforms.RandomHorizontalFlip(),
+            transforms.ToTensor(),
+            normalize,
+        ]))
+
+    val_set = datasets.ImageFolder(valdir, transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        normalize,
+    ]))
+
+    if distributed:
+        sampler = DistributedSampler(train_set)
+    else:
+        sampler = None
+
+    train_loader = DataLoader(
+        train_set, batch_size=batch_size, sampler=sampler, num_workers=1,
+        pin_memory=True, shuffle=(not distributed))
+
+    val_loader = DataLoader(val_set, batch_size=batch_size // 2, shuffle=False)
+
+    return train_loader, val_loader    
+
 
 def mnist_loader(batch_size: int, distributed: bool) -> None:
     train_set = datasets.MNIST(DATA_ROOT, train=True,
@@ -200,5 +247,7 @@ def get_loader(name: str, batch_size: int, distributed: bool):
         return cifar100_loader(batch_size=batch_size, distributed=distributed)
     elif name == 'imagenet':
         return imagenet_loader(batch_size=batch_size, distributed=distributed)
+    elif name == 'tiny_imagenet':
+        return tiny_imagenet_loader(batch_size=batch_size, distributed=distributed)
     else:
         raise ValueError(f'{name} dataset is not available')
