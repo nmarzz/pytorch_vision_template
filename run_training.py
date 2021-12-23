@@ -19,19 +19,22 @@ def get_args(parser):
     parser.add_argument('--model', type=str, default='mlp')
     parser.add_argument('--loss-function', type=str, default='cross_entropy')
     parser.add_argument('--dataset', type=str)
-    parser.add_argument('--load-path', type=str)    
+    parser.add_argument('--load-path', type=str)
     parser.add_argument('--pretrained', action='store_true')
     parser.add_argument('--freeze-embedder', action='store_true')
     parser.add_argument('--device', type=str, nargs='+', default=['cpu'],
                         help='Name of CUDA device(s) being used (if any). Otherwise will use CPU. \
                             Can also specify multiple devices (separated by spaces) for multiprocessing.')
-    parser.add_argument('--optimizer', type=str, choices=['sgd', 'adam'], default='sgd', metavar='O')
+    parser.add_argument('--optimizer', type=str,
+                        choices=['sgd', 'adam'], default='sgd', metavar='O')
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--weight-decay', type=float, default=0)
     parser.add_argument('--momentum', type=float, default=0.9)
-    parser.add_argument('--clip', type=float, default=100, help='Clip the gradient norm. Helps when training with our decomposed layer')
+    parser.add_argument('--clip', type=float, default=100,
+                        help='Clip the gradient norm. Helps when training with our decomposed layer')
     parser.add_argument('--plateau-patience', type=int, default=5)
-    parser.add_argument('--scheduler', type=str, choices=['plateau', 'cosine'], default='plateau')
+    parser.add_argument('--scheduler', type=str,
+                        choices=['plateau', 'cosine'], default='plateau')
     parser.add_argument('--epochs', type=int, default=5)
     parser.add_argument('--early-stop', type=int, default=50)
     parser.add_argument('--batch-size', type=int, default=64)
@@ -54,18 +57,20 @@ def main_worker(idx: int, num_gpus: int, distributed: bool, args: argparse.Names
 
     # Get the data
     batch_size = int(args.batch_size / num_gpus)
-    train_loader, val_loader = get_loader(name=args.dataset, batch_size=batch_size, distributed=distributed)
+    train_loader, val_loader = get_loader(
+        name=args.dataset, batch_size=batch_size, distributed=distributed)
 
-    # Get model    
+    # Get model
     model = get_model(args.model, args)
     if args.freeze_embedder:
         freeze_embedder(model)
 
-    model.to(device)        
+    model.to(device)
     if distributed:
         model = DistributedDataParallel(model, device_ids=[device])
 
-    trainer = GeneralTrainer(model=model, train_loader=train_loader, val_loader=val_loader, device=device, logger=logger, idx=idx, args=args)
+    trainer = GeneralTrainer(model=model, train_loader=train_loader,
+                             val_loader=val_loader, device=device, logger=logger, idx=idx, args=args)
     trainer.train()
     print('LR reduced at epochs')
     print(trainer.change_epochs)

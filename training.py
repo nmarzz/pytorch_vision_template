@@ -281,7 +281,6 @@ def predict(model: nn.Module, device: torch.device,
     acc1 = 0
     acc5 = 0
     confusion = []
-    n = 0
     with torch.no_grad():
         for data, target in loader:
             data, target = data.to(device), target.to(device)

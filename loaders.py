@@ -66,6 +66,7 @@ def imagenet_loader(batch_size: int, distributed: bool = False) -> tuple([DataLo
 
     return train_loader, val_loader
 
+
 def tiny_imagenet_loader(batch_size: int, distributed: bool = False) -> tuple([DataLoader, DataLoader]):
     """Loader for the Tiny ImageNet dataset.
 
@@ -111,7 +112,7 @@ def tiny_imagenet_loader(batch_size: int, distributed: bool = False) -> tuple([D
 
     val_loader = DataLoader(val_set, batch_size=batch_size // 2, shuffle=False)
 
-    return train_loader, val_loader    
+    return train_loader, val_loader
 
 
 def mnist_loader(batch_size: int, distributed: bool) -> None:

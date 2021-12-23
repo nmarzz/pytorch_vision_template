@@ -3,8 +3,8 @@ from torch import nn
 
 
 def freeze_embedder(model: nn.Module):
-    ''' Freeze all layers except for the final linear classification layer    
-        Occurs in place        
+    ''' Freeze all layers except for the final linear classification layer
+        Occurs in place
      '''
 
     # Get layers to freeze
@@ -14,6 +14,6 @@ def freeze_embedder(model: nn.Module):
         features = list(model.children())[:-1]
 
     # Freeze parameters in layer
-    for l in features:
-        for param in l.parameters():
+    for layer in features:
+        for param in layer.parameters():
             param.requires_grad = False

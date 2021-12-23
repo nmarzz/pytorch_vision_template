@@ -6,7 +6,6 @@ Can handle:
 '''
 import argparse
 import torch
-from torch import nn
 import numpy as np
 from loaders import get_loader
 from models import get_model

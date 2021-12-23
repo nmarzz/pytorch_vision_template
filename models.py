@@ -4,10 +4,7 @@ from torch import nn
 from argparse import Namespace
 import torch.nn.functional as F
 import torchvision
-import math
-import numpy as np
 import torch
-from typing import Optional, Union
 
 
 class ResNet18(nn.Module):
