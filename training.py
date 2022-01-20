@@ -195,12 +195,13 @@ class GeneralTrainer(Trainer):
         train_top1_acc = AverageMeter()
         train_top5_acc = AverageMeter()
         for batch_idx, (data, target) in enumerate(self.train_loader):
-            data, target = data.to(self.device), target.to(self.device)
+            # data, target = data.to(self.device), target.to(self.device)
             self.optimizer.zero_grad()
 
             with autocast():
                 output = self.model(data)
                 loss = self.loss_function(output, target)
+
             top1_acc, top5_acc = compute_accuracy(output, target)
             train_loss.update(loss.item())
             train_top1_acc.update(top1_acc)
@@ -297,11 +298,10 @@ def predict(model: nn.Module, device: torch.device,
     confusion = []
     with torch.no_grad():
         for data, target in loader:
-            data, target = data.to(device), target.to(device)
-            output = model(data)
-
-            output = model(data)
-            loss = loss_function(output, target)
+            # data, target = data.to(device), target.to(device)
+            with autocast():
+                output = model(data)            
+                loss = loss_function(output, target)
             total_loss += loss.item()
 
             cur_acc1, cur_acc5 = compute_accuracy(output, target)

@@ -58,7 +58,7 @@ def main_worker(idx: int, num_gpus: int, distributed: bool, args: argparse.Names
     # Get the data
     batch_size = int(args.batch_size / num_gpus)
     train_loader, val_loader = get_loader(
-        name=args.dataset, batch_size=batch_size, distributed=distributed, resize = args.pretrained)
+        name=args.dataset, batch_size=batch_size, distributed=distributed, resize = args.pretrained, device = device)
 
     # Get model
     model = get_model(args.model, args)
