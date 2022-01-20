@@ -9,6 +9,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
 import numpy as np
 from logger import Logger
 from loss_functions import get_loss_function
+import time
 
 
 class Trainer():
@@ -88,7 +89,10 @@ class Trainer():
         self.val_accs5.append(val_acc5)
 
         for epoch in range(1, self.epochs + 1):
+            train_start = time.time()
+            epoch_start = time.time()
             train_loss, train_acc, train_acc5 = self.train_epoch(epoch)
+            self.logger.log('Epoch time: {} s'.format(time.time() - epoch_start))
             val_loss, val_acc, val_acc5 = self.validate()
 
             self.logger.log('\n')
@@ -145,6 +149,8 @@ class Trainer():
                         "Learning rate decreasing to {}\n".format(self.lr))
             else:
                 self.scheduler.step()
+
+            self.logger.log('Training time: {} s'.format(time.time() - train_start))
 
         if self.idx == 0:
             self.train_report()

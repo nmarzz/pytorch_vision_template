@@ -171,22 +171,41 @@ def fashion_mnist_loader(batch_size: int, distributed: bool) -> None:
     return train_loader, val_loader
 
 
-def cifar10_loader(batch_size: int, distributed: bool = False) -> tuple([DataLoader, DataLoader]):
+def cifar10_loader(batch_size: int, distributed: bool, resize: bool) -> tuple([DataLoader, DataLoader]):
     # Get the train/val sets
+
+    if resize:
+        train_transforms = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+        val_transforms = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+    else:
+        train_transforms = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+        val_transforms = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
 
     train_set = torchvision.datasets.CIFAR10(DATA_ROOT, train=True,
-                                             transform=transforms.Compose([
-                                                 transforms.ToTensor(),
-                                                 transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                                                      std=[0.229, 0.224, 0.225])
-                                             ]), download=True)
+                                             transform=train_transforms, download=True)
 
     val_set = torchvision.datasets.CIFAR10(DATA_ROOT, train=False,
-                                           transform=transforms.Compose([
-                                               transforms.ToTensor(),
-                                               transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                                                    std=[0.229, 0.224, 0.225])
-                                           ]), download=True)
+                                           transform=val_transforms, download=True)
 
     # For distributed training
     if distributed:
@@ -196,30 +215,50 @@ def cifar10_loader(batch_size: int, distributed: bool = False) -> tuple([DataLoa
 
     # Now make the loaders
     train_loader = DataLoader(
-        train_set, batch_size=batch_size, sampler=sampler, num_workers=1,
+        train_set, batch_size=batch_size, sampler=sampler, num_workers=8,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
+    val_loader = DataLoader(val_set, batch_size=batch_size,
+                            shuffle=False, num_workers=8)
 
     return train_loader, val_loader
 
 
-def cifar100_loader(batch_size: int, distributed: bool = False) -> tuple([DataLoader, DataLoader]):
+def cifar100_loader(batch_size: int, distributed: bool, resize: bool) -> tuple([DataLoader, DataLoader]):
     # Get the train/val sets
 
+    if resize:
+        train_transforms = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+        val_transforms = transforms.Compose([
+            transforms.Resize(256),
+            transforms.CenterCrop(224),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+    else:
+        train_transforms = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+        val_transforms = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+
     train_set = torchvision.datasets.CIFAR100(DATA_ROOT, train=True,
-                                              transform=transforms.Compose([
-                                                  transforms.ToTensor(),
-                                                  transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                                                       std=[0.229, 0.224, 0.225])
-                                              ]), download=True)
+                                             transform=train_transforms, download=True)
 
     val_set = torchvision.datasets.CIFAR100(DATA_ROOT, train=False,
-                                            transform=transforms.Compose([
-                                                transforms.ToTensor(),
-                                                transforms.Normalize(mean=[0.485, 0.456, 0.406],
-                                                                     std=[0.229, 0.224, 0.225])
-                                            ]), download=True)
+                                           transform=val_transforms, download=True)
 
     # For distributed training
     if distributed:
@@ -229,23 +268,24 @@ def cifar100_loader(batch_size: int, distributed: bool = False) -> tuple([DataLo
 
     # Now make the loaders
     train_loader = DataLoader(
-        train_set, batch_size=batch_size, sampler=sampler, num_workers=1,
+        train_set, batch_size=batch_size, sampler=sampler, num_workers=8,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
+    val_loader = DataLoader(val_set, batch_size=batch_size,
+                            shuffle=False, num_workers=8)
 
     return train_loader, val_loader
 
 
-def get_loader(name: str, batch_size: int, distributed: bool):
+def get_loader(name: str, batch_size: int, distributed: bool, resize: bool):
     if name == 'fashion_mnist':
         return fashion_mnist_loader(batch_size=batch_size, distributed=distributed)
     elif name == 'mnist':
         return mnist_loader(batch_size=batch_size, distributed=distributed)
     elif name == 'cifar10':
-        return cifar10_loader(batch_size=batch_size, distributed=distributed)
+        return cifar10_loader(batch_size=batch_size, distributed=distributed, resize=resize)
     elif name == 'cifar100':
-        return cifar100_loader(batch_size=batch_size, distributed=distributed)
+        return cifar100_loader(batch_size=batch_size, distributed=distributed, resize=resize)
     elif name == 'imagenet':
         return imagenet_loader(batch_size=batch_size, distributed=distributed)
     elif name == 'tiny_imagenet':
