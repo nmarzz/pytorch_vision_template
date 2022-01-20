@@ -298,10 +298,10 @@ def predict(model: nn.Module, device: torch.device,
     with torch.no_grad():
         for data, target in loader:
             data, target = data.to(device), target.to(device)
-            output = model(data)
 
-            output = model(data)
-            loss = loss_function(output, target)
+            with autocast():
+                output = model(data)            
+                loss = loss_function(output, target)
             total_loss += loss.item()
 
             cur_acc1, cur_acc5 = compute_accuracy(output, target)
