@@ -90,8 +90,8 @@ class Trainer():
         self.train_accs5.append(train_acc5)
         self.val_accs5.append(val_acc5)
 
+        train_start = time.time()
         for epoch in range(1, self.epochs + 1):
-            train_start = time.time()
             epoch_start = time.time()
             train_loss, train_acc, train_acc5 = self.train_epoch(epoch)
             self.logger.log('Epoch time: {} s'.format(time.time() - epoch_start))
