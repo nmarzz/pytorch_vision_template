@@ -152,7 +152,7 @@ class Trainer():
             else:
                 self.scheduler.step()
 
-            self.logger.log('Training time: {} s'.format(time.time() - train_start))
+        self.logger.log('Training time: {} s'.format(time.time() - train_start))
 
         if self.idx == 0:
             self.train_report()
