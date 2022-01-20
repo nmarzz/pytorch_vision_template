@@ -94,7 +94,8 @@ class Trainer():
             train_start = time.time()
             epoch_start = time.time()
             train_loss, train_acc, train_acc5 = self.train_epoch(epoch)
-            self.logger.log('Epoch time: {} s'.format(time.time() - epoch_start))
+            self.logger.log('Epoch time: {} s'.format(
+                time.time() - epoch_start))
             val_loss, val_acc, val_acc5 = self.validate()
 
             self.logger.log('\n')
@@ -152,7 +153,8 @@ class Trainer():
             else:
                 self.scheduler.step()
 
-            self.logger.log('Training time: {} s'.format(time.time() - train_start))
+        self.logger.log('Training time: {} s'.format(
+            time.time() - train_start))
 
         if self.idx == 0:
             self.train_report()
@@ -206,25 +208,21 @@ class GeneralTrainer(Trainer):
             train_loss.update(loss.item())
             train_top1_acc.update(top1_acc)
             train_top5_acc.update(top5_acc)
-            
+
             self.scaler.scale(loss).backward()
             self.scaler.unscale_(self.optimizer)
 
             # Clip the gradients for stability
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.clip)
-            
+
             self.scaler.step(self.optimizer)
             self.scaler.update()
-            
 
             if batch_idx % 10 == 0:
                 logged_loss = train_loss.get_avg()
 
-                log_str = 'Train Epoch {} [{}/{} ({:.0f}%)]\tLoss: {:6f}'.format(
-                    epoch, batch_idx *
-                    len(data), int(
-                        len(self.train_loader.dataset) / self.num_devices),
-                    100. * batch_idx / len(self.train_loader), logged_loss)
+                log_str = 'Train Epoch {} [{}/{} ({:.0f}%)]\tLoss: {:6f}'.format(epoch,
+                    batch_idx * len(data), int(50000 / self.num_devices), 100. * batch_idx / len(self.train_loader), logged_loss)
                 self.logger.log(log_str)
 
         return train_loss.get_avg(), train_top1_acc.get_avg(), train_top5_acc.get_avg()
@@ -300,7 +298,7 @@ def predict(model: nn.Module, device: torch.device,
         for data, target in loader:
             # data, target = data.to(device), target.to(device)
             with autocast():
-                output = model(data)            
+                output = model(data)
                 loss = loss_function(output, target)
             total_loss += loss.item()
 
