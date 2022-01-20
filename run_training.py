@@ -30,7 +30,7 @@ def get_args(parser):
     parser.add_argument('--lr', type=float, default=0.01)
     parser.add_argument('--weight-decay', type=float, default=0)
     parser.add_argument('--momentum', type=float, default=0.9)
-    parser.add_argument('--clip', type=float, default=100,
+    parser.add_argument('--clip', type=float, default=1000,
                         help='Clip the gradient norm. Helps when training with our decomposed layer')
     parser.add_argument('--plateau-patience', type=int, default=5)
     parser.add_argument('--scheduler', type=str,

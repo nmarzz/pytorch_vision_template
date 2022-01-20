@@ -9,6 +9,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau, CosineAnnealingLR
 import numpy as np
 from logger import Logger
 from loss_functions import get_loss_function
+from torch.cuda.amp import GradScaler, autocast
 import time
 
 
@@ -49,6 +50,7 @@ class Trainer():
         self.log_dir = logger.get_log_dir()
         self.num_devices = len(args.device)
         self.clip = args.clip
+        self.scaler = GradScaler()
 
         self.model.to(self.device)
 
@@ -196,17 +198,23 @@ class GeneralTrainer(Trainer):
             data, target = data.to(self.device), target.to(self.device)
             self.optimizer.zero_grad()
 
-            output = self.model(data)
-            loss = self.loss_function(output, target)
+            with autocast():
+                output = self.model(data)
+                loss = self.loss_function(output, target)
             top1_acc, top5_acc = compute_accuracy(output, target)
             train_loss.update(loss.item())
             train_top1_acc.update(top1_acc)
             train_top5_acc.update(top5_acc)
-            loss.backward()
+            
+            self.scaler.scale(loss).backward()
+            self.scaler.unscale_(self.optimizer)
 
             # Clip the gradients for stability
             torch.nn.utils.clip_grad_norm_(self.model.parameters(), self.clip)
-            self.optimizer.step()
+            
+            self.scaler.step(self.optimizer)
+            self.scaler.update()
+            
 
             if batch_idx % 10 == 0:
                 logged_loss = train_loss.get_avg()
