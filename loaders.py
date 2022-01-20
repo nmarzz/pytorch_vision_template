@@ -59,10 +59,10 @@ def imagenet_loader(batch_size: int, distributed: bool = False) -> tuple([DataLo
         sampler = None
 
     train_loader = DataLoader(
-        train_set, batch_size=batch_size, sampler=sampler, num_workers=1,
+        train_set, batch_size=batch_size, sampler=sampler, num_workers=10,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size // 2, shuffle=False)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False,num_workers=10)
 
     return train_loader, val_loader
 
@@ -107,10 +107,10 @@ def tiny_imagenet_loader(batch_size: int, distributed: bool = False) -> tuple([D
         sampler = None
 
     train_loader = DataLoader(
-        train_set, batch_size=batch_size, sampler=sampler, num_workers=1,
+        train_set, batch_size=batch_size, sampler=sampler, num_workers=10,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size // 2, shuffle=False)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers= 10)
 
     return train_loader, val_loader
 
@@ -134,10 +134,10 @@ def mnist_loader(batch_size: int, distributed: bool) -> None:
         sampler = None
 
     train_loader = DataLoader(
-        train_set, batch_size=batch_size, sampler=sampler, num_workers=1,
+        train_set, batch_size=batch_size, sampler=sampler, num_workers=8,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=8)
 
     return train_loader, val_loader
 
@@ -163,10 +163,10 @@ def fashion_mnist_loader(batch_size: int, distributed: bool) -> None:
         sampler = None
 
     train_loader = DataLoader(
-        train_set, batch_size=batch_size, sampler=sampler, num_workers=1,
+        train_set, batch_size=batch_size, sampler=sampler, num_workers=8,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=8)
 
     return train_loader, val_loader
 
