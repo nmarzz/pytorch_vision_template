@@ -90,8 +90,8 @@ class Trainer():
         self.train_accs5.append(train_acc5)
         self.val_accs5.append(val_acc5)
 
+        train_start = time.time()
         for epoch in range(1, self.epochs + 1):
-            train_start = time.time()
             epoch_start = time.time()
             train_loss, train_acc, train_acc5 = self.train_epoch(epoch)
             self.logger.log('Epoch time: {} s'.format(
@@ -198,12 +198,13 @@ class GeneralTrainer(Trainer):
         train_top5_acc = AverageMeter()
         for batch_idx, (data, target) in enumerate(self.train_loader):
             # data, target = data.to(self.device), target.to(self.device)
-            self.optimizer.zero_grad()
+            self.optimizer.zero_grad(set_to_none=True)
 
             with autocast():
                 output = self.model(data)
                 loss = self.loss_function(output, target)
 
+        
             top1_acc, top5_acc = compute_accuracy(output, target)
             train_loss.update(loss.item())
             train_top1_acc.update(top1_acc)

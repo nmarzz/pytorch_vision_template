@@ -65,7 +65,8 @@ def main_worker(idx: int, num_gpus: int, distributed: bool, args: argparse.Names
     if args.freeze_embedder:
         freeze_embedder(model)
 
-    model.to(device)
+    model.to(memory_format=torch.channels_last).to(device)
+    
     if distributed:
         model = DistributedDataParallel(model, device_ids=[device])
 
