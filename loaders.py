@@ -62,7 +62,7 @@ def imagenet_loader(batch_size: int, distributed: bool = False) -> tuple([DataLo
         train_set, batch_size=batch_size, sampler=sampler, num_workers=10,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False,num_workers=10)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False,num_workers=10, pin_memory= True)
 
     return train_loader, val_loader
 
@@ -110,7 +110,7 @@ def tiny_imagenet_loader(batch_size: int, distributed: bool = False) -> tuple([D
         train_set, batch_size=batch_size, sampler=sampler, num_workers=10,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers= 10)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers= 10, pin_memory=True)
 
     return train_loader, val_loader
 
@@ -137,7 +137,7 @@ def mnist_loader(batch_size: int, distributed: bool) -> None:
         train_set, batch_size=batch_size, sampler=sampler, num_workers=8,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=8)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=8, pin_memory= True)
 
     return train_loader, val_loader
 
@@ -166,7 +166,7 @@ def fashion_mnist_loader(batch_size: int, distributed: bool) -> None:
         train_set, batch_size=batch_size, sampler=sampler, num_workers=8,
         pin_memory=True, shuffle=(not distributed))
 
-    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=8)
+    val_loader = DataLoader(val_set, batch_size=batch_size, shuffle=False, num_workers=8, pin_memory= True)
 
     return train_loader, val_loader
 
@@ -219,7 +219,7 @@ def cifar10_loader(batch_size: int, distributed: bool, resize: bool) -> tuple([D
         pin_memory=True, shuffle=(not distributed))
 
     val_loader = DataLoader(val_set, batch_size=batch_size,
-                            shuffle=False, num_workers=8)
+                            shuffle=False, num_workers=8, pin_memory= True)
 
     return train_loader, val_loader
 
@@ -272,7 +272,7 @@ def cifar100_loader(batch_size: int, distributed: bool, resize: bool) -> tuple([
         pin_memory=True, shuffle=(not distributed))
 
     val_loader = DataLoader(val_set, batch_size=batch_size,
-                            shuffle=False, num_workers=8)
+                            shuffle=False, num_workers=8, pin_memory= True)
 
     return train_loader, val_loader
 

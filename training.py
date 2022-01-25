@@ -195,8 +195,8 @@ class GeneralTrainer(Trainer):
         train_top1_acc = AverageMeter()
         train_top5_acc = AverageMeter()
         for batch_idx, (data, target) in enumerate(self.train_loader):
-            data, target = data.to(self.device), target.to(self.device)
-            self.optimizer.zero_grad()
+            data, target = data.to(self.device, non_blocking = True), target.to(self.device, non_blocking = True)
+            self.optimizer.zero_grad(set_to_none= True)
 
             with autocast():
                 output = self.model(data)
@@ -297,7 +297,7 @@ def predict(model: nn.Module, device: torch.device,
     confusion = []
     with torch.no_grad():
         for data, target in loader:
-            data, target = data.to(device), target.to(device)
+            data, target = data.to(device, non_blocking = True), target.to(device, non_blocking = True)
 
             with autocast():
                 output = model(data)            
